@@ -1,38 +1,26 @@
-import { type User, type InsertUser } from "@shared/schema";
-import { randomUUID } from "crypto";
-
-// modify the interface with any CRUD methods
-// you might need
+import { db } from "./db";
+import { generatedIdeas } from "@shared/schema";
+import { eq } from "drizzle-orm";
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  // We strictly don't *need* storage for this app as requested, but we'll implement a basic log
+  logGeneration(idea: any): Promise<void>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-
-  constructor() {
-    this.users = new Map();
-  }
-
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
-  }
-
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
-  }
-
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+export class DatabaseStorage implements IStorage {
+  async logGeneration(idea: any): Promise<void> {
+    try {
+      await db.insert(generatedIdeas).values({
+        domain: idea.domain || "Unknown",
+        skillLevel: idea.skillLevel || "Unknown",
+        projectType: idea.projectType || "Unknown",
+        generatedContent: idea,
+      });
+    } catch (e) {
+      console.error("Failed to log generation:", e);
+      // Don't fail the request if logging fails
+    }
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
