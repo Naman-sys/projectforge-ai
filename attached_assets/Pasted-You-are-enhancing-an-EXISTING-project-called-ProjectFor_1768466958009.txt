@@ -1,0 +1,110 @@
+You are enhancing an EXISTING project called "ProjectForge AI".
+The project already generates software project ideas.
+
+DO NOT refactor the app.
+DO NOT change the UI layout.
+DO NOT add new dependencies.
+ONLY improve the intelligence and realism of generated AIML ideas.
+
+========================
+OBJECTIVE
+========================
+
+Make AIML project ideas feel:
+- Research-oriented
+- Industry-grade
+- Resume-ready
+
+========================
+REQUIRED INTELLIGENCE UPGRADES
+========================
+
+1️⃣ MODEL-AWARE IDEA GENERATION
+
+When Target Domain = "AIML", every generated project MUST include:
+
+- Learning Type:
+  - Supervised / Unsupervised / Semi-Supervised / Reinforcement
+
+- Models (chosen based on skill level):
+  - Beginner:
+    - Logistic Regression
+    - Decision Tree
+    - K-Means
+  - Intermediate:
+    - Random Forest
+    - XGBoost
+    - Gradient Boosting
+  - Advanced:
+    - CNN
+    - LSTM / GRU
+    - Transformer-based models
+
+- Evaluation Metrics:
+  - Accuracy
+  - Precision / Recall
+  - F1-Score
+  - ROC-AUC (if classification)
+
+2️⃣ DATA PIPELINE SECTION
+
+Add a new section in the output called **"ML Pipeline"** containing:
+- Data collection
+- Data preprocessing
+- Feature engineering
+- Model training
+- Model evaluation
+- Deployment strategy
+
+3️⃣ DATASET-DRIVEN DESCRIPTIONS
+
+Ensure every AIML description:
+- Mentions dataset size/type (e.g., structured, text, images)
+- References realistic public datasets:
+  - Kaggle
+  - UCI ML Repository
+  - Open datasets
+
+4️⃣ PROBLEM-TO-MODEL ALIGNMENT
+
+Automatically align:
+- Problem type → model choice
+  - Prediction → Regression / Classification
+  - Recommendation → Collaborative filtering
+  - NLP → TF-IDF, Word2Vec, Transformers
+  - Computer Vision → CNNs
+
+5️⃣ ADVANCED-LEVEL DEPTH (ONLY FOR ADVANCED)
+
+If Skill Level = Advanced, include:
+- Model optimization (hyperparameter tuning)
+- Cross-validation
+- Model explainability (SHAP / LIME)
+- Scalability considerations
+
+========================
+CONSTRAINTS
+========================
+
+- Keep everything deterministic and rule-based
+- No LLM APIs
+- No paid services
+- No placeholders
+- Maintain current JSON response structure
+- No breaking changes
+
+========================
+DELIVERABLE
+========================
+
+Provide:
+- Updated backend logic only
+- Clean, readable code
+- Inline comments explaining intelligence upgrades
+
+IMPORTANT:
+- This must work on free Replit tier
+- Do NOT touch frontend code
+- Do NOT summarize — provide actual code
+
+Now apply these intelligence upgrades safely.

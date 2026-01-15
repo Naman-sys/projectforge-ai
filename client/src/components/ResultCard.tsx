@@ -17,7 +17,11 @@ import {
   Brain,
   TrendingUp,
   ClipboardCheck,
-  Copy
+  Copy,
+  GitMerge,
+  ShieldCheck,
+  Zap,
+  Cpu
 } from "lucide-react";
 
 interface ResultCardProps {
@@ -109,6 +113,7 @@ ${idea.roadmap.map((r, i) => `${i + 1}. ${r}`).join('\n')}
               <TabsList className="bg-transparent h-auto p-0 gap-6">
                 <TabTrigger value="overview" icon={Layers} label="Overview" />
                 <TabTrigger value="tech" icon={Code} label="Tech Stack" />
+                {idea.mlPipeline && <TabTrigger value="pipeline" icon={GitMerge} label="ML Pipeline" />}
                 <TabTrigger value="roadmap" icon={Rocket} label="Roadmap" />
                 <TabTrigger value="structure" icon={Terminal} label="Structure" />
               </TabsList>
@@ -135,10 +140,41 @@ ${idea.roadmap.map((r, i) => `${i + 1}. ${r}`).join('\n')}
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Layers className="w-4 h-4 text-accent" />
+                        <Cpu className="w-4 h-4 text-accent" />
                         <div>
                           <p className="text-[10px] font-bold text-accent/60 uppercase">Type</p>
                           <p className="text-sm font-semibold text-white">{idea.learningType}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Advanced Metadata */}
+                  {idea.advancedMetadata && (
+                    <div className="grid grid-cols-1 gap-3">
+                      <div className="p-4 rounded-xl bg-primary/5 border border-primary/10 space-y-3">
+                        <h4 className="text-xs font-bold text-primary uppercase tracking-widest flex items-center gap-2">
+                          <Zap className="w-4 h-4" /> Advanced Level Depth
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {idea.advancedMetadata.optimization && (
+                            <div className="space-y-1">
+                              <p className="text-[10px] font-bold text-primary/60 uppercase">Optimization</p>
+                              <p className="text-xs text-white/90">{idea.advancedMetadata.optimization}</p>
+                            </div>
+                          )}
+                          {idea.advancedMetadata.explainability && (
+                            <div className="space-y-1">
+                              <p className="text-[10px] font-bold text-primary/60 uppercase">Explainability</p>
+                              <p className="text-xs text-white/90">{idea.advancedMetadata.explainability}</p>
+                            </div>
+                          )}
+                          {idea.advancedMetadata.scalability && (
+                            <div className="space-y-1">
+                              <p className="text-[10px] font-bold text-primary/60 uppercase">Scalability</p>
+                              <p className="text-xs text-white/90">{idea.advancedMetadata.scalability}</p>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -159,24 +195,11 @@ ${idea.roadmap.map((r, i) => `${i + 1}. ${r}`).join('\n')}
                       ))}
                     </div>
                   </div>
-
-                  <div>
-                    <h3 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2">
-                      <Rocket className="w-5 h-5" /> Future Enhancements
-                    </h3>
-                    <div className="space-y-2">
-                      {idea.futureEnhancements.map((item, i) => (
-                        <p key={i} className="text-sm text-muted-foreground pl-4 border-l-2 border-primary/20">
-                          {item}
-                        </p>
-                      ))}
-                    </div>
-                  </div>
                 </TabsContent>
 
                 <TabsContent value="tech" className="mt-0 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                    <div>
-                    <h3 className="text-lg font-semibold text-primary mb-4">Recommended Stack</h3>
+                    <h3 className="text-lg font-semibold text-primary mb-4">Industry Tech Stack</h3>
                     <div className="flex flex-wrap gap-2">
                       {idea.techStack.map((tech, i) => (
                         <Badge key={i} className="bg-primary/20 hover:bg-primary/30 text-primary-foreground border-primary/20 px-4 py-2 text-sm">
@@ -189,7 +212,7 @@ ${idea.roadmap.map((r, i) => `${i + 1}. ${r}`).join('\n')}
                   {idea.datasetSuggestions && idea.datasetSuggestions.length > 0 && (
                     <div className="p-6 rounded-xl bg-accent/5 border border-accent/10">
                       <h3 className="text-lg font-semibold text-accent mb-4 flex items-center gap-2">
-                        <Database className="w-5 h-5" /> Recommended Datasets
+                        <Database className="w-5 h-5" /> Research Datasets
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {idea.datasetSuggestions.map((ds, i) => (
@@ -207,6 +230,24 @@ ${idea.roadmap.map((r, i) => `${i + 1}. ${r}`).join('\n')}
                     </div>
                   )}
                 </TabsContent>
+
+                {idea.mlPipeline && (
+                  <TabsContent value="pipeline" className="mt-0 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div className="space-y-4">
+                      {idea.mlPipeline.map((step, i) => (
+                        <div key={i} className="flex items-start gap-4 p-4 rounded-xl bg-white/5 border border-white/5 hover:border-primary/30 transition-all group">
+                          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold shrink-0">
+                            {i + 1}
+                          </div>
+                          <div>
+                            <h4 className="font-bold text-white mb-1 group-hover:text-primary transition-colors">{step.stage}</h4>
+                            <p className="text-sm text-muted-foreground">{step.details}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </TabsContent>
+                )}
 
                 <TabsContent value="roadmap" className="mt-0 animate-in fade-in slide-in-from-bottom-4 duration-500">
                   <div className="space-y-6 relative before:absolute before:inset-0 before:ml-2.5 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-primary before:via-accent before:to-transparent">

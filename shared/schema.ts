@@ -34,12 +34,22 @@ export const projectIdeaSchema = z.object({
   techStack: z.array(z.string()),
   datasetSuggestions: z.array(datasetEntrySchema).optional(),
   roadmap: z.array(z.string()),
-  folderStructure: z.string(), // We'll pass this as a pre-formatted string or JSON string
+  folderStructure: z.string(), 
   futureEnhancements: z.array(z.string()),
   // AIML Specific fields
   modelName: z.string().optional(),
   learningType: z.string().optional(),
   evaluationMetric: z.string().optional(),
+  // New: ML Pipeline
+  mlPipeline: z.array(z.object({
+    stage: z.string(),
+    details: z.string()
+  })).optional(),
+  advancedMetadata: z.object({
+    optimization: z.string().optional(),
+    explainability: z.string().optional(),
+    scalability: z.string().optional()
+  }).optional()
 });
 
 export type IdeaInput = z.infer<typeof ideaInputSchema>;
