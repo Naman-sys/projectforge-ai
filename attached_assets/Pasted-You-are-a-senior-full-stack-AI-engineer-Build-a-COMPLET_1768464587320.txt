@@ -1,0 +1,130 @@
+You are a senior full-stack AI engineer.
+
+Build a COMPLETE, WORKING, and FREE software project called:
+
+"ProjectForge AI – AI Project Idea Generator"
+
+GOALS:
+- The app must generate intelligent software/AIML project ideas
+- It must NOT use any paid API (NO OpenAI, NO Gemini, NO Groq)
+- It must run fully using Python logic + NLP + templates
+- Code must be production-ready and error-free
+
+========================
+FUNCTIONAL REQUIREMENTS
+========================
+
+1. USER INPUT FORM (Frontend – React)
+- Skill Level: Beginner | Intermediate | Advanced
+- Domain: AIML | Web Dev | Data Science | Cyber Security | App Dev
+- Preferred Language: Python | Java | JavaScript | C++
+- Project Type: Mini Project | Major Project | Startup Idea
+
+2. OUTPUT (Generated Project)
+The system must generate:
+- Project Title
+- Problem Statement
+- Detailed Description
+- Key Features (bullet points)
+- Tech Stack
+- Dataset Suggestions (if AIML)
+- Step-by-step Development Roadmap
+- Folder Structure
+- Future Enhancements
+
+3. AI LOGIC (Backend – Python)
+- Use rule-based intelligence
+- Use NLP keyword mapping
+- Randomized but controlled idea generation
+- Each generation should feel UNIQUE
+- No external AI API calls
+
+========================
+TECH STACK
+========================
+
+Frontend:
+- React + Vite
+- Tailwind CSS
+- Axios
+
+Backend:
+- Python
+- FastAPI
+- Pydantic
+- Uvicorn
+
+========================
+PROJECT STRUCTURE
+========================
+
+projectforge-ai/
+│
+├── backend/
+│   ├── main.py
+│   ├── idea_engine/
+│   │   ├── generator.py
+│   │   ├── logic.py
+│   │   ├── datasets.py
+│   ├── models/
+│   │   └── schemas.py
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── api/
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│
+└── README.md
+
+========================
+IMPLEMENTATION DETAILS
+========================
+
+BACKEND:
+- FastAPI app with POST /generate endpoint
+- Input validation using Pydantic
+- AI logic must:
+  - Combine domain + level + language
+  - Select features intelligently
+  - Generate human-like descriptions
+- Return JSON response
+
+FRONTEND:
+- Clean UI with Tailwind
+- Form submission using Axios
+- Display output in card layout
+- Responsive design
+
+========================
+EXTRA REQUIREMENTS
+========================
+
+- Provide FULL backend code
+- Provide FULL frontend code
+- Provide setup & run instructions
+- No placeholders
+- No pseudo-code
+- Everything must run without modification
+
+========================
+OUTPUT FORMAT
+========================
+
+1. Explanation (short)
+2. Full Folder Structure
+3. Backend Code (all files)
+4. Frontend Code (all files)
+5. How to run locally
+6. How to deploy (FREE)
+
+IMPORTANT:
+- This is a FREE-only project
+- Do NOT suggest paid APIs
+- Do NOT skip any file
+- Do NOT summarize code
+- WRITE FULL CODE
+
+Now generate the COMPLETE project.
