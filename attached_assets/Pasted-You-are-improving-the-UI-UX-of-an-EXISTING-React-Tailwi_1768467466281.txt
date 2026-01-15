@@ -1,0 +1,86 @@
+You are improving the UI/UX of an EXISTING React + Tailwind project
+called "ProjectForge AI".
+
+DO NOT touch backend code.
+DO NOT change existing functionality.
+ONLY improve layout, theme, and animations.
+
+========================
+OBJECTIVES
+========================
+
+1. Make the LEFT INPUT SECTION wider
+2. Add a DARK → LIGHT theme toggle
+3. Add a smooth INTRO animation when the app loads
+
+========================
+REQUIRED UI CHANGES
+========================
+
+1️⃣ LEFT SECTION WIDTH FIX
+
+- Increase the width of the left panel (input section)
+- Use a responsive layout:
+  - Desktop:
+    - Left section: ~40–45%
+    - Right section: ~55–60%
+  - Mobile:
+    - Stack vertically (unchanged behavior)
+- Ensure spacing and padding remain clean
+- Do NOT shrink the right output card
+
+2️⃣ DARK → LIGHT THEME TOGGLE
+
+- Add a theme toggle button (🌙 / ☀️) in the top-right corner
+- Implement using:
+  - Tailwind `dark:` classes
+  - React state (no external libraries)
+- Default theme: Dark
+- Light theme should have:
+  - Soft light background
+  - Dark readable text
+  - Same accent colors (purple / cyan)
+- Persist theme using `localStorage`
+
+3️⃣ INTRO ANIMATION ON APP LOAD
+
+- When app loads:
+  - Fade in the entire app
+  - Slight slide-up animation
+  - Duration: 2–3 seconds
+- Use:
+  - CSS animations or Tailwind transitions
+  - React `useEffect`
+- Animation should run ONLY once on page load
+- After animation, app remains fully interactive
+
+========================
+CONSTRAINTS
+========================
+
+- Use only React + Tailwind CSS
+- No new libraries (no Framer Motion)
+- No breaking changes
+- Keep existing components and structure
+- Clean, readable code
+- Works on Replit free tier
+
+========================
+DELIVERABLE
+========================
+
+Provide:
+- Exact React component changes
+- Exact Tailwind class updates
+- Minimal CSS if required
+- Clear comments explaining:
+  - Layout changes
+  - Theme logic
+  - Animation logic
+
+IMPORTANT:
+- Do NOT rewrite the entire UI
+- Modify only what is necessary
+- Ensure app still builds and runs without errors
+
+Now implement these UI/UX upgrades safely.

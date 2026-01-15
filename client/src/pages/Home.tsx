@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useGenerateIdea } from "@/hooks/use-generator";
 import { SelectField } from "@/components/ui/SelectField";
 import { Button } from "@/components/ui/button";
 import { ResultCard } from "@/components/ResultCard";
 import { useToast } from "@/hooks/use-toast";
-import { Sparkles, BrainCircuit, Code2, Loader2, ArrowRight } from "lucide-react";
+import { Sparkles, BrainCircuit, Code2, Loader2, ArrowRight, Sun, Moon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { IdeaInput } from "@shared/schema";
 
@@ -17,6 +17,8 @@ const PROJECT_TYPES = ["Mini Project", "Major Project", "Startup Idea"];
 export default function Home() {
   const { toast } = useToast();
   const generate = useGenerateIdea();
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "dark");
   
   const [formData, setFormData] = useState<IdeaInput>({
     skillLevel: "Intermediate",
@@ -24,6 +26,17 @@ export default function Home() {
     language: "JavaScript",
     projectType: "Mini Project",
   });
+
+  useEffect(() => {
+    setIsLoaded(true);
+    document.documentElement.classList.toggle("dark", theme === "dark");
+    document.documentElement.classList.toggle("light", theme === "light");
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === "dark" ? "light" : "dark");
+  };
 
   const handleGenerate = () => {
     generate.mutate(formData, {
@@ -45,10 +58,22 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col md:flex-row overflow-hidden bg-background">
+    <div className={`min-h-screen w-full flex flex-col md:flex-row overflow-hidden bg-background ${isLoaded ? 'animate-app-intro' : 'opacity-0'}`}>
       
+      {/* Theme Toggle */}
+      <div className="absolute top-6 right-6 z-50">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={toggleTheme}
+          className="rounded-full bg-background/50 backdrop-blur-sm border-white/10"
+        >
+          {theme === "dark" ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-primary" />}
+        </Button>
+      </div>
+
       {/* LEFT SIDE - Form */}
-      <div className="w-full md:w-[450px] lg:w-[500px] shrink-0 h-auto md:h-screen overflow-y-auto p-6 lg:p-10 border-r border-white/5 bg-background/50 backdrop-blur-sm z-10 relative flex flex-col">
+      <div className="w-full md:w-[40%] lg:w-[45%] shrink-0 h-auto md:h-screen overflow-y-auto p-6 lg:p-10 border-r border-white/5 bg-background/50 backdrop-blur-sm z-10 relative flex flex-col">
         
         {/* Brand Header */}
         <div className="mb-10 pt-4">
@@ -56,7 +81,7 @@ export default function Home() {
             <div className="p-2.5 rounded-lg bg-gradient-to-br from-primary to-accent shadow-lg shadow-primary/25">
               <BrainCircuit className="w-6 h-6 text-white" />
             </div>
-            <h1 className="text-2xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-white/60">
+            <h1 className="text-2xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/60">
               ProjectForge AI
             </h1>
           </div>
@@ -123,8 +148,8 @@ export default function Home() {
 
         {/* Footer */}
         <div className="mt-10 pt-6 border-t border-white/5 text-center md:text-left">
-          <p className="text-xs text-muted-foreground/50 font-mono">
-            POWERED BY ADVANCED LLMS • V1.0.0
+          <p className="text-xs text-muted-foreground/50 font-mono uppercase">
+            Built for Developers • Industry Grade Logic
           </p>
         </div>
       </div>
