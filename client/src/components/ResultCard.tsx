@@ -2,7 +2,10 @@ import { ProjectIdea } from "@shared/schema";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
+import { useState } from "react";
 import { 
   Code, 
   Layers, 
@@ -10,7 +13,11 @@ import {
   ListChecks, 
   Rocket, 
   Database,
-  Terminal
+  Terminal,
+  Brain,
+  TrendingUp,
+  ClipboardCheck,
+  Copy
 } from "lucide-react";
 
 interface ResultCardProps {
@@ -18,24 +25,74 @@ interface ResultCardProps {
 }
 
 export function ResultCard({ idea }: ResultCardProps) {
+  const { toast } = useToast();
+  const [copied, setCopied] = useState(false);
+
+  const copyToClipboard = async () => {
+    const text = `
+Project Title: ${idea.title}
+Problem Statement: ${idea.problemStatement}
+Description: ${idea.description}
+
+Key Features:
+${idea.keyFeatures.map(f => "- " + f).join('\n')}
+
+Tech Stack:
+${idea.techStack.join(', ')}
+
+Roadmap:
+${idea.roadmap.map((r, i) => `${i + 1}. ${r}`).join('\n')}
+    `.trim();
+
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      toast({
+        title: "Copied!",
+        description: "Project idea copied to clipboard.",
+      });
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      toast({
+        title: "Failed to copy",
+        description: "Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="h-full"
+      className="h-full relative pb-20"
     >
       <div className="glass-card rounded-2xl overflow-hidden h-full flex flex-col border-t-4 border-t-accent shadow-2xl shadow-accent/5">
         
         {/* Header */}
         <div className="p-8 pb-4">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-3 rounded-xl bg-accent/10 text-accent">
-              <Lightbulb className="w-6 h-6" />
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-3 rounded-xl bg-accent/10 text-accent">
+                <Lightbulb className="w-6 h-6" />
+              </div>
+              <Badge variant="outline" className="border-accent/50 text-accent px-3 py-1">
+                Generated Project
+              </Badge>
             </div>
-            <Badge variant="outline" className="border-accent/50 text-accent px-3 py-1">
-              Generated Project
-            </Badge>
+            <Button 
+              size="sm"
+              variant="outline"
+              onClick={copyToClipboard}
+              className="bg-white/5 border-white/10 hover:bg-white/10 text-xs h-8"
+            >
+              {copied ? (
+                <><ClipboardCheck className="w-3.5 h-3.5 mr-2 text-green-400" /> Copied!</>
+              ) : (
+                <><Copy className="w-3.5 h-3.5 mr-2" /> Copy Idea</>
+              )}
+            </Button>
           </div>
           <h2 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70">
             {idea.title}
@@ -60,6 +117,33 @@ export function ResultCard({ idea }: ResultCardProps) {
             <ScrollArea className="flex-1">
               <div className="p-8">
                 <TabsContent value="overview" className="mt-0 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  {/* AI Specific Metrics */}
+                  {(idea.modelName || idea.learningType) && (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-4 rounded-xl bg-accent/5 border border-accent/10">
+                      <div className="flex items-center gap-2">
+                        <Brain className="w-4 h-4 text-accent" />
+                        <div>
+                          <p className="text-[10px] font-bold text-accent/60 uppercase">Model</p>
+                          <p className="text-sm font-semibold text-white">{idea.modelName}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <TrendingUp className="w-4 h-4 text-accent" />
+                        <div>
+                          <p className="text-[10px] font-bold text-accent/60 uppercase">Metric</p>
+                          <p className="text-sm font-semibold text-white">{idea.evaluationMetric}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Layers className="w-4 h-4 text-accent" />
+                        <div>
+                          <p className="text-[10px] font-bold text-accent/60 uppercase">Type</p>
+                          <p className="text-sm font-semibold text-white">{idea.learningType}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   <Section title="Description" content={idea.description} />
                   
                   <div>
@@ -103,18 +187,23 @@ export function ResultCard({ idea }: ResultCardProps) {
                   </div>
 
                   {idea.datasetSuggestions && idea.datasetSuggestions.length > 0 && (
-                    <div>
+                    <div className="p-6 rounded-xl bg-accent/5 border border-accent/10">
                       <h3 className="text-lg font-semibold text-accent mb-4 flex items-center gap-2">
                         <Database className="w-5 h-5" /> Recommended Datasets
                       </h3>
-                      <ul className="space-y-2">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {idea.datasetSuggestions.map((ds, i) => (
-                          <li key={i} className="text-sm text-gray-300 flex items-center gap-2">
-                            <span className="w-1 h-1 bg-accent rounded-full" />
-                            {ds}
-                          </li>
+                          <div key={i} className="space-y-1">
+                            <p className="text-sm font-bold text-white flex items-center gap-2">
+                              <span className="w-1 h-1 bg-accent rounded-full" />
+                              {ds.name}
+                            </p>
+                            <p className="text-xs text-muted-foreground/70 pl-3">
+                              {ds.description}
+                            </p>
+                          </div>
                         ))}
-                      </ul>
+                      </div>
                     </div>
                   )}
                 </TabsContent>
