@@ -17,7 +17,7 @@ const PROJECT_TYPES = ["Mini Project", "Major Project", "Startup Idea"];
 export default function Home() {
   const { toast } = useToast();
   const generate = useGenerateIdea();
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "dark");
   
   const [formData, setFormData] = useState<IdeaInput>({
@@ -28,10 +28,16 @@ export default function Home() {
   });
 
   useEffect(() => {
-    setIsLoaded(true);
+    // Initial loading sequence
+    const timer = setTimeout(() => {
+      setIsInitialLoading(false);
+    }, 2000);
+
     document.documentElement.classList.toggle("dark", theme === "dark");
     document.documentElement.classList.toggle("light", theme === "light");
     localStorage.setItem("theme", theme);
+
+    return () => clearTimeout(timer);
   }, [theme]);
 
   const toggleTheme = () => {
@@ -58,156 +64,191 @@ export default function Home() {
   };
 
   return (
-    <div className={`min-h-screen w-full flex flex-col md:flex-row overflow-hidden bg-background ${isLoaded ? 'animate-app-intro' : 'opacity-0'}`}>
-      
-      {/* Theme Toggle */}
-      <div className="absolute top-6 right-6 z-50">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={toggleTheme}
-          className="rounded-full bg-background/50 backdrop-blur-sm border-white/10"
-        >
-          {theme === "dark" ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-primary" />}
-        </Button>
-      </div>
-
-      {/* LEFT SIDE - Form */}
-      <div className="w-full md:w-[40%] lg:w-[45%] shrink-0 h-auto md:h-screen overflow-y-auto p-6 lg:p-10 border-r border-white/5 bg-background/50 backdrop-blur-sm z-10 relative flex flex-col">
-        
-        {/* Brand Header */}
-        <div className="mb-10 pt-4">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="p-2.5 rounded-lg bg-gradient-to-br from-primary to-accent shadow-lg shadow-primary/25">
-              <BrainCircuit className="w-6 h-6 text-white" />
-            </div>
-            <h1 className="text-2xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/60">
-              ProjectForge AI
-            </h1>
-          </div>
-          <p className="text-muted-foreground text-sm">
-            Generate production-ready project ideas tailored to your tech stack and skill level.
-          </p>
-        </div>
-
-        {/* Input Form */}
-        <div className="space-y-8 flex-1">
-          <div className="space-y-6">
-            <SelectField
-              label="Skill Level"
-              value={formData.skillLevel}
-              onValueChange={(val) => setFormData(prev => ({ ...prev, skillLevel: val as any }))}
-              options={SKILL_LEVELS}
-              disabled={generate.isPending}
-            />
-            
-            <SelectField
-              label="Target Domain"
-              value={formData.domain}
-              onValueChange={(val) => setFormData(prev => ({ ...prev, domain: val as any }))}
-              options={DOMAINS}
-              disabled={generate.isPending}
-            />
-
-            <SelectField
-              label="Primary Language"
-              value={formData.language}
-              onValueChange={(val) => setFormData(prev => ({ ...prev, language: val as any }))}
-              options={LANGUAGES}
-              disabled={generate.isPending}
-            />
-
-            <SelectField
-              label="Project Type"
-              value={formData.projectType}
-              onValueChange={(val) => setFormData(prev => ({ ...prev, projectType: val as any }))}
-              options={PROJECT_TYPES}
-              disabled={generate.isPending}
-            />
-          </div>
-
-          <Button 
-            onClick={handleGenerate} 
-            disabled={generate.isPending}
-            className="w-full h-14 text-base font-semibold bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-xl shadow-primary/20 transition-all duration-300 rounded-xl group relative overflow-hidden"
+    <>
+      <AnimatePresence>
+        {isInitialLoading && (
+          <motion.div
+            key="initial-loader"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background"
           >
-            {generate.isPending ? (
-              <div className="flex items-center gap-2">
-                <Loader2 className="w-5 h-5 animate-spin" />
-                <span>Crafting Idea...</span>
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="flex flex-col items-center gap-6"
+            >
+              <div className="p-6 rounded-3xl bg-gradient-to-br from-primary to-accent shadow-2xl shadow-primary/40 animate-pulse">
+                <BrainCircuit className="w-16 h-16 text-white" />
               </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                <span>Generate Idea</span>
-                <ArrowRight className="w-5 h-5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
+              <h2 className="text-3xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
+                ProjectForge AI
+              </h2>
+              <div className="w-48 h-1 bg-muted rounded-full overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 1.5, ease: "easeInOut" }}
+                  className="h-full bg-primary"
+                />
               </div>
-            )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className={`min-h-screen w-full flex flex-col md:flex-row overflow-hidden bg-background transition-opacity duration-1000 ${isInitialLoading ? 'opacity-0' : 'opacity-100 animate-app-intro'}`}>
+        
+        {/* Theme Toggle */}
+        <div className="absolute top-6 right-6 z-50">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={toggleTheme}
+            className="rounded-full bg-background/50 backdrop-blur-sm border-white/10 hover:border-primary/50"
+          >
+            {theme === "dark" ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-primary" />}
           </Button>
         </div>
 
-        {/* Footer */}
-        <div className="mt-10 pt-6 border-t border-white/5 text-center md:text-left">
-          <p className="text-xs text-muted-foreground/50 font-mono uppercase">
-            Built for Developers • Industry Grade Logic
-          </p>
-        </div>
-      </div>
-
-      {/* RIGHT SIDE - Display Area */}
-      <div className="flex-1 h-screen relative bg-grid-white/[0.02]">
-        
-        {/* Dynamic Background Elements */}
-        <div className="absolute top-0 right-0 p-20 opacity-20 blur-3xl rounded-full bg-primary pointer-events-none" />
-        <div className="absolute bottom-0 left-0 p-32 opacity-10 blur-3xl rounded-full bg-accent pointer-events-none" />
-
-        <div className="h-full w-full p-4 md:p-8 lg:p-12 overflow-hidden flex flex-col justify-center">
-          <AnimatePresence mode="wait">
-            {!generate.data && !generate.isPending ? (
-              // Empty State
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="flex flex-col items-center justify-center text-center max-w-lg mx-auto"
-              >
-                <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mb-6 border border-white/10 shadow-2xl backdrop-blur-sm animate-pulse-slow">
-                  <Code2 className="w-10 h-10 text-muted-foreground/50" />
-                </div>
-                <h3 className="text-2xl font-bold text-foreground mb-3">Ready to Build Something?</h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  Select your preferences on the left and hit generate. We'll craft a unique project idea complete with architecture, roadmap, and tech stack recommendations.
-                </p>
-              </motion.div>
-            ) : generate.isPending ? (
-              // Loading State
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="flex flex-col items-center justify-center text-center"
-              >
-                <div className="relative w-32 h-32 mb-8">
-                  <div className="absolute inset-0 rounded-full border-t-2 border-primary animate-spin" />
-                  <div className="absolute inset-2 rounded-full border-r-2 border-accent animate-spin animation-delay-200" />
-                  <div className="absolute inset-4 rounded-full border-b-2 border-primary animate-spin animation-delay-500" />
-                </div>
-                <h3 className="text-xl font-medium text-foreground animate-pulse">
-                  Analyzing Tech Stack...
-                </h3>
-                <p className="text-muted-foreground mt-2">
-                  Designing architecture & features
-                </p>
-              </motion.div>
-            ) : (
-              // Result Card
-              <div className="h-full max-w-5xl mx-auto w-full">
-                <ResultCard idea={generate.data!} />
+        {/* LEFT SIDE - Form */}
+        <div className="w-full md:w-[40%] lg:w-[45%] shrink-0 h-auto md:h-screen overflow-y-auto p-6 lg:p-10 border-r border-white/5 bg-background/30 backdrop-blur-sm z-10 relative flex flex-col">
+          
+          {/* Brand Header */}
+          <div className="mb-10 pt-4">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2.5 rounded-lg bg-gradient-to-br from-primary to-accent shadow-lg shadow-primary/25">
+                <BrainCircuit className="w-6 h-6 text-white" />
               </div>
-            )}
-          </AnimatePresence>
+              <h1 className="text-2xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/60">
+                ProjectForge AI
+              </h1>
+            </div>
+            <p className="text-muted-foreground text-sm">
+              Generate production-ready project ideas tailored to your tech stack and skill level.
+            </p>
+          </div>
+
+          {/* Input Form */}
+          <div className="space-y-8 flex-1">
+            <div className="space-y-6">
+              <SelectField
+                label="Skill Level"
+                value={formData.skillLevel}
+                onValueChange={(val) => setFormData(prev => ({ ...prev, skillLevel: val as any }))}
+                options={SKILL_LEVELS}
+                disabled={generate.isPending}
+              />
+              
+              <SelectField
+                label="Target Domain"
+                value={formData.domain}
+                onValueChange={(val) => setFormData(prev => ({ ...prev, domain: val as any }))}
+                options={DOMAINS}
+                disabled={generate.isPending}
+              />
+
+              <SelectField
+                label="Primary Language"
+                value={formData.language}
+                onValueChange={(val) => setFormData(prev => ({ ...prev, language: val as any }))}
+                options={LANGUAGES}
+                disabled={generate.isPending}
+              />
+
+              <SelectField
+                label="Project Type"
+                value={formData.projectType}
+                onValueChange={(val) => setFormData(prev => ({ ...prev, projectType: val as any }))}
+                options={PROJECT_TYPES}
+                disabled={generate.isPending}
+              />
+            </div>
+
+            <Button 
+              onClick={handleGenerate} 
+              disabled={generate.isPending}
+              className="w-full h-14 text-base font-semibold bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-xl shadow-primary/20 transition-all duration-300 rounded-xl group relative overflow-hidden"
+            >
+              {generate.isPending ? (
+                <div className="flex items-center gap-2">
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>Crafting Idea...</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                  <span>Generate Idea</span>
+                  <ArrowRight className="w-5 h-5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
+                </div>
+              )}
+            </Button>
+          </div>
+
+          {/* Footer */}
+          <div className="mt-10 pt-6 border-t border-white/5 text-center md:text-left">
+            <p className="text-xs text-muted-foreground/50 font-mono uppercase">
+              Built for Developers • Industry Grade Logic
+            </p>
+          </div>
+        </div>
+
+        {/* RIGHT SIDE - Display Area */}
+        <div className="flex-1 h-screen relative bg-grid-white/[0.02]">
+          
+          {/* Dynamic Background Elements */}
+          <div className="absolute top-0 right-0 p-20 opacity-20 blur-3xl rounded-full bg-primary pointer-events-none" />
+          <div className="absolute bottom-0 left-0 p-32 opacity-10 blur-3xl rounded-full bg-accent pointer-events-none" />
+
+          <div className="h-full w-full p-4 md:p-8 lg:p-12 overflow-hidden flex flex-col justify-center">
+            <AnimatePresence mode="wait">
+              {!generate.data && !generate.isPending ? (
+                // Empty State
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="flex flex-col items-center justify-center text-center max-w-lg mx-auto"
+                >
+                  <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mb-6 border border-white/10 shadow-2xl backdrop-blur-sm animate-pulse-slow">
+                    <Code2 className="w-10 h-10 text-muted-foreground/50" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-foreground mb-3">Ready to Build Something?</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Select your preferences on the left and hit generate. We'll craft a unique project idea complete with architecture, roadmap, and tech stack recommendations.
+                  </p>
+                </motion.div>
+              ) : generate.isPending ? (
+                // Loading State
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="flex flex-col items-center justify-center text-center"
+                >
+                  <div className="relative w-32 h-32 mb-8">
+                    <div className="absolute inset-0 rounded-full border-t-2 border-primary animate-spin" />
+                    <div className="absolute inset-2 rounded-full border-r-2 border-accent animate-spin animation-delay-200" />
+                    <div className="absolute inset-4 rounded-full border-b-2 border-primary animate-spin animation-delay-500" />
+                  </div>
+                  <h3 className="text-xl font-medium text-foreground animate-pulse">
+                    Analyzing Tech Stack...
+                  </h3>
+                  <p className="text-muted-foreground mt-2">
+                    Designing architecture & features
+                  </p>
+                </motion.div>
+              ) : (
+                // Result Card
+                <div className="h-full max-w-5xl mx-auto w-full">
+                  <ResultCard idea={generate.data!} />
+                </div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
