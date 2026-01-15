@@ -1,0 +1,89 @@
+You are working on an EXISTING project called "ProjectForge AI"
+built using Replit with React (frontend) and a logic-based backend.
+
+DO NOT rewrite the entire project.
+DO NOT change the UI layout.
+DO NOT introduce new frameworks.
+ONLY enhance existing logic and UI safely.
+
+========================
+OBJECTIVE
+========================
+
+Upgrade the current project idea generator by adding:
+
+1. AIML-SPECIFIC INTELLIGENCE
+2. DATASET SUGGESTIONS
+3. COPY TO CLIPBOARD FEATURE
+
+========================
+REQUIRED CHANGES
+========================
+
+1️⃣ AIML INTELLIGENCE (BACKEND LOGIC)
+
+- When Target Domain = "AIML":
+  - Automatically include:
+    - ML/DL model names (e.g., Logistic Regression, Random Forest, XGBoost, CNN, RNN)
+    - Learning types (Supervised, Unsupervised, Reinforcement)
+    - Evaluation metrics (Accuracy, F1-score, ROC-AUC)
+  - Models should vary based on:
+    - Skill Level
+      - Beginner → Classical ML
+      - Intermediate → Ensemble models
+      - Advanced → Deep Learning / Hybrid models
+
+- Ensure generated descriptions explicitly mention:
+  - Dataset usage
+  - Model training
+  - Prediction or recommendation outputs
+
+2️⃣ DATASET SUGGESTIONS SECTION
+
+- Add a new output section titled: "Suggested Datasets"
+- Show this section ONLY if domain = AIML
+- Datasets should be realistic and public:
+  - Kaggle datasets
+  - UCI ML Repository
+  - Public CSV datasets
+- Each dataset entry should include:
+  - Dataset name
+  - Short description
+
+3️⃣ COPY TO CLIPBOARD (FRONTEND)
+
+- Add a "Copy Project Idea" button below the generated output
+- On click:
+  - Copy all generated content (title, description, features, tech stack, roadmap)
+  - Show a small success message (e.g., "Copied to clipboard!")
+
+- Use browser-native clipboard API
+- Do NOT add new UI libraries
+
+========================
+CONSTRAINTS
+========================
+
+- Keep existing files and structure
+- Modify ONLY necessary logic
+- Code must be error-free
+- Maintain current styling
+- Use clean, readable code
+- No placeholders
+
+========================
+DELIVERABLE
+========================
+
+Provide:
+- Exact code changes for backend logic
+- Exact code changes for frontend copy button
+- Clear comments explaining what was added
+
+IMPORTANT:
+- This is a FREE project
+- Do NOT suggest paid APIs
+- Do NOT remove existing functionality
+
+Now implement these upgrades safely.
+``

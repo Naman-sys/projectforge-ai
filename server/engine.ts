@@ -1,4 +1,4 @@
-import { IdeaInput, ProjectIdea } from "@shared/schema";
+import { IdeaInput, ProjectIdea, DatasetEntry } from "@shared/schema";
 import natural from "natural";
 
 const tokenizer = new natural.WordTokenizer();
@@ -47,13 +47,39 @@ const FEATURES_DOMAIN: Record<string, string[]> = {
   "App Dev": ["Push Notifications", "Offline Mode", "GPS/Location Services", "Camera Integration", "App Store Optimization", "Cloud Syncing", "Biometric Login", "In-app Purchases"]
 };
 
+// AIML Intelligence Data
+const AIML_CONFIG = {
+  Beginner: {
+    models: ["Logistic Regression", "K-Nearest Neighbors", "Naive Bayes", "Decision Tree"],
+    type: "Supervised Learning (Classification/Regression)",
+    metrics: ["Accuracy", "Precision", "Recall"]
+  },
+  Intermediate: {
+    models: ["Random Forest", "XGBoost", "Gradient Boosting", "SVM"],
+    type: "Ensemble Learning / Supervised",
+    metrics: ["F1-score", "ROC-AUC", "Mean Squared Error"]
+  },
+  Advanced: {
+    models: ["CNN (Convolutional Neural Network)", "RNN (Recurrent Neural Network)", "Transformers", "GANs"],
+    type: "Deep Learning / Generative AI",
+    metrics: ["Loss Curves", "Top-k Accuracy", "Perplexity"]
+  }
+};
+
+const DATASETS_AIML: DatasetEntry[] = [
+  { name: "Kaggle: Titanic Disaster", description: "Classic binary classification dataset for predicting survival." },
+  { name: "UCI: Iris Flower", description: "Simple multi-class classification for botanical features." },
+  { name: "Kaggle: House Prices", description: "Regression dataset for predicting urban property values." },
+  { name: "UCI: Breast Cancer Wisconsin", description: "Medical diagnostic data for malignancy prediction." },
+  { name: "Kaggle: MNIST Digits", description: "Handwritten digit recognition dataset for computer vision." }
+];
+
 // === NLP UTILS ===
 
 function calculateRelevance(title: string, domain: string): number {
-  const titleTokens = tokenizer.tokenize(title.toLowerCase());
-  const domainTokens = tokenizer.tokenize(domain.toLowerCase());
+  const titleTokens = tokenizer.tokenize(title.toLowerCase()) || [];
+  const domainTokens = tokenizer.tokenize(domain.toLowerCase()) || [];
   
-  // Basic keyword overlap scoring
   let score = 0;
   titleTokens.forEach(t => {
     if (domainTokens.includes(t)) score += 1;
@@ -69,8 +95,6 @@ export function generateProject(input: IdeaInput): ProjectIdea {
 
   // 1. Select Theme with NLP Scoring
   const domainTitles = TITLES[domain] || TITLES["Web Dev"];
-  
-  // Pick 3 candidates and choose the one with best "relevance" (simulating a smart selection)
   const candidates = Array.from({ length: 3 }, () => domainTitles[Math.floor(Math.random() * domainTitles.length)]);
   const baseTitle = candidates.reduce((best, current) => {
     return calculateRelevance(current, domain) >= calculateRelevance(best, domain) ? current : best;
@@ -86,8 +110,20 @@ export function generateProject(input: IdeaInput): ProjectIdea {
   const domainProblems = PROBLEMS[domain] || ["Manual processes are inefficient and prone to error.", "Data is scattered and hard to analyze.", "Users lack a centralized platform for this task."];
   const problem = domainProblems[Math.floor(Math.random() * domainProblems.length)];
 
-  // 4. Description
-  const description = `This project addresses the critical issue: "${problem}". By building a ${skillLevel.toLowerCase()} level ${domain} application using ${language}, it provides a scalable and efficient solution for users and organizations.`;
+  // 4. Description & AIML Intelligence
+  let description = `This project addresses the critical issue: "${problem}". By building a ${skillLevel.toLowerCase()} level ${domain} application using ${language}, it provides a scalable and efficient solution for users and organizations.`;
+  
+  let aimlData: Partial<ProjectIdea> = {};
+  if (domain === "AIML") {
+    const config = AIML_CONFIG[skillLevel];
+    const model = config.models[Math.floor(Math.random() * config.models.length)];
+    aimlData = {
+      modelName: model,
+      learningType: config.type,
+      evaluationMetric: config.metrics[Math.floor(Math.random() * config.metrics.length)]
+    };
+    description += ` Specifically, it will utilize ${aimlData.modelName} (a ${aimlData.learningType} approach) to process training data and provide intelligent outputs, evaluated using ${aimlData.evaluationMetric}.`;
+  }
 
   // 5. Tech Stack
   let stack: string[] = [];
@@ -159,9 +195,12 @@ project_root/
   ];
 
   // 9. Dataset (AIML only)
-  const datasets = domain === "AIML" || domain === "Data Science" 
-    ? ["Kaggle: " + baseTitle.split(' ').join('-') + "-dataset", "Public API: Data.gov", "Synthetically generated test data"] 
-    : undefined;
+  let datasets: DatasetEntry[] | undefined = undefined;
+  if (domain === "AIML") {
+    datasets = DATASETS_AIML.sort(() => 0.5 - Math.random()).slice(0, 2);
+  } else if (domain === "Data Science") {
+    datasets = [{ name: "Public API: Data.gov", description: "Access to thousands of open datasets from the US government." }];
+  }
 
   return {
     title: finalTitle,
@@ -172,6 +211,7 @@ project_root/
     datasetSuggestions: datasets,
     roadmap: roadmap,
     folderStructure: structure,
-    futureEnhancements: ["Real-time Cloud Sync", "Multi-user Collaboration", "Predictive Analytics Engine"]
+    futureEnhancements: ["Real-time Cloud Sync", "Multi-user Collaboration", "Predictive Analytics Engine"],
+    ...aimlData
   };
 }

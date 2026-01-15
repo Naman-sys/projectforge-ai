@@ -21,17 +21,27 @@ export const ideaInputSchema = z.object({
   projectType: z.enum(["Mini Project", "Major Project", "Startup Idea"]),
 });
 
+export const datasetEntrySchema = z.object({
+  name: z.string(),
+  description: z.string(),
+});
+
 export const projectIdeaSchema = z.object({
   title: z.string(),
   problemStatement: z.string(),
   description: z.string(),
   keyFeatures: z.array(z.string()),
   techStack: z.array(z.string()),
-  datasetSuggestions: z.array(z.string()).optional(),
+  datasetSuggestions: z.array(datasetEntrySchema).optional(),
   roadmap: z.array(z.string()),
   folderStructure: z.string(), // We'll pass this as a pre-formatted string or JSON string
   futureEnhancements: z.array(z.string()),
+  // AIML Specific fields
+  modelName: z.string().optional(),
+  learningType: z.string().optional(),
+  evaluationMetric: z.string().optional(),
 });
 
 export type IdeaInput = z.infer<typeof ideaInputSchema>;
 export type ProjectIdea = z.infer<typeof projectIdeaSchema>;
+export type DatasetEntry = z.infer<typeof datasetEntrySchema>;
