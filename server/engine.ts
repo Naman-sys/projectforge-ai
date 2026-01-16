@@ -1,4 +1,4 @@
-import { IdeaInput, ProjectIdea, DatasetEntry } from "@shared/schema";
+import { IdeaInput, ProjectIdea, DatasetEntry, CodeTemplate } from "@shared/schema";
 import natural from "natural";
 
 const tokenizer = new natural.WordTokenizer();
@@ -135,6 +135,25 @@ export function generateProject(input: IdeaInput): ProjectIdea {
       selectedMetric = "Precision";
     }
 
+    // Generate Code Templates for AIML
+    const templates: CodeTemplate[] = [
+      {
+        filename: "preprocessing.py",
+        language: "python",
+        content: `import pandas as pd\nimport numpy as np\nfrom sklearn.preprocessing import StandardScaler, LabelEncoder\n\ndef preprocess_data(df):\n    # 1. Handle missing values\n    df = df.fillna(df.mean())\n    \n    # 2. Encode categorical variables\n    le = LabelEncoder()\n    for col in df.select_dtypes(include=['object']):\n        df[col] = le.fit_transform(df[col])\n    \n    # 3. Feature Scaling\n    scaler = StandardScaler()\n    features = df.drop('target', axis=1)\n    scaled_features = scaler.fit_transform(features)\n    \n    return scaled_features, df['target']\n\nif __name__ == "__main__":\n    # Placeholder for dataset path\n    DATA_PATH = "data/raw_dataset.csv"\n    print(f"Loading data from {DATA_PATH}...")`
+      },
+      {
+        filename: "train.py",
+        language: "python",
+        content: `import pandas as pd\nimport joblib\nfrom sklearn.model_selection import train_test_split\n# Model placeholder based on selection\nfrom sklearn.ensemble import ${selectedModel.replace(/\s+/g, '')} # Adjust import as needed\n\ndef train_model(X, y):\n    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)\n    \n    model = ${selectedModel.replace(/\s+/g, '')}()\n    model.fit(X_train, y_train)\n    \n    # Save model\n    joblib.dump(model, 'models/trained_model.pkl')\n    print("Model saved to models/trained_model.pkl")\n    return model\n\nif __name__ == "__main__":\n    print("Starting training pipeline for ${selectedModel}...")`
+      },
+      {
+        filename: "requirements.txt",
+        language: "plaintext",
+        content: `pandas>=1.3.0\nnumpy>=1.21.0\nscikit-learn>=1.0.0\njoblib>=1.1.0\nmatplotlib>=3.4.0\n${selectedModel.toLowerCase().includes('cnn') || selectedModel.toLowerCase().includes('transformers') ? 'tensorflow>=2.6.0\ntorch>=1.9.0' : ''}`
+      }
+    ];
+
     aimlData = {
       modelName: selectedModel,
       learningType: selectedType,
@@ -146,14 +165,15 @@ export function generateProject(input: IdeaInput): ProjectIdea {
         { stage: "Model Training", details: `Optimizing ${selectedModel} using GPU-accelerated environments.` },
         { stage: "Model Evaluation", details: `Validated using ${selectedMetric} on hold-out test sets.` },
         { stage: "Deployment Strategy", details: "Containerized deployment using Docker and RESTful API endpoints." }
-      ]
+      ],
+      codeTemplates: templates
     };
 
     if (skillLevel === "Advanced") {
       aimlData.advancedMetadata = {
         optimization: "Bayesian Hyperparameter Tuning with 5-fold Cross Validation.",
         explainability: "Model transparency using SHAP (SHapley Additive exPlanations).",
-        scalability: "Horizontal scaling via Kubernetes clusters and Redis caching."
+        scalability: "Horizontal scaling via Kubernetes clusters and Redis caching.",
       };
     }
 
@@ -187,7 +207,23 @@ export function generateProject(input: IdeaInput): ProjectIdea {
 
   // 7. Folder Structure
   let structure = "";
-  if (language === "Python") {
+  if (domain === "AIML") {
+    structure = `
+project_root/
+├── data/
+│   ├── raw/
+│   └── processed/
+├── models/
+│   ├── trained/
+│   └── checkpoints/
+├── src/
+│   ├── data/ (preprocessing.py)
+│   ├── models/ (train.py, predict.py)
+│   └── utils/ (config.py)
+├── notebooks/ (EDA)
+├── requirements.txt
+└── main.py`;
+  } else if (language === "Python") {
     structure = `
 project_root/
 ├── app/

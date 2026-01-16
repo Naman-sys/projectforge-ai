@@ -1,0 +1,130 @@
+You are a senior AI + Full-Stack engineer working on an EXISTING project
+called “AI Project Idea Generator”.
+
+The project already:
+- Generates AIML project ideas
+- Runs on Replit
+- Uses Node + Express backend
+- Uses React frontend
+- May optionally use a database on Replit
+
+Your task is to UPGRADE the project so that it becomes a
+MAJOR AIML-BASED PROJECT and is DEPLOYMENT-SAFE on:
+
+- Replit (development + demo)
+- Render (backend)
+- Vercel (frontend)
+
+IMPORTANT RULES:
+- DO NOT redesign the UI
+- DO NOT remove existing features
+- DO NOT refactor unless required for deployment safety
+- DO NOT add paid services
+- DO NOT break Replit compatibility
+
+=====================================
+MAIN OBJECTIVE
+=====================================
+
+For every generated project idea, the system must also generate:
+
+1. An AIML PROJECT BLUEPRINT
+2. AIML CODE TEMPLATES (scaffold, not full apps)
+3. A CLEAR ML PIPELINE
+4. OPTIONAL DATABASE USAGE (must not crash without DB)
+
+This must qualify as a MAJOR AIML PROJECT academically.
+
+=====================================
+WHAT TO GENERATE FOR EACH IDEA
+=====================================
+
+When a project idea is generated, ALSO generate:
+
+1️⃣ PROJECT STRUCTURE
+- Folder layout for AIML project
+- Separate data, model, training, inference layers
+
+2️⃣ AIML PIPELINE DESCRIPTION
+- Data collection
+- Preprocessing
+- Feature engineering
+- Model selection
+- Training
+- Evaluation
+- Deployment
+
+3️⃣ CODE TEMPLATES (NOT FULL APPS)
+Generate reusable, editable templates such as:
+
+- train.py (with model placeholders)
+- predict.py
+- preprocessing.py
+- config.py
+- requirements.txt
+
+Templates MUST:
+- Use real ML libraries (sklearn, pandas, numpy)
+- Contain real code
+- Use placeholders for dataset paths and parameters
+- NOT require immediate training to run
+
+4️⃣ MODEL & DATASET AWARENESS
+- Recommend ML models based on problem type
+- Recommend public datasets (Kaggle / UCI)
+- Recommend evaluation metrics
+
+=====================================
+DEPLOYMENT SAFETY (VERY IMPORTANT)
+=====================================
+
+Ensure the backend:
+
+- Always listens on process.env.PORT
+- Binds to 0.0.0.0
+- Has CORS enabled
+- Does NOT crash if DATABASE_URL is missing
+- Uses database ONLY if DATABASE_URL exists
+- Skips DB logic gracefully otherwise
+
+Ensure the frontend:
+
+- Uses import.meta.env.VITE_API_URL
+- Has NO hardcoded localhost URLs
+- Is compatible with Vercel
+
+=====================================
+DATABASE HANDLING RULES
+=====================================
+
+- Replit automatically provides DATABASE_URL
+- Render does NOT provide DATABASE_URL by default
+- Database usage must be OPTIONAL
+- Missing DATABASE_URL must NEVER crash the app
+- Database logging must be fire-and-forget
+
+=====================================
+WHAT NOT TO DO
+=====================================
+
+- Do NOT generate full runnable ML projects for every idea
+- Do NOT train models automatically
+- Do NOT assume datasets are downloaded
+- Do NOT add unnecessary complexity
+
+=====================================
+FINAL DELIVERABLE
+=====================================
+
+- Minimal, safe backend changes ONLY if required
+- Blueprint + AIML code templates added to idea output
+- Clear comments explaining why each deployment-safe fix exists
+- Same codebase must work on:
+  - Replit
+  - Render
+  - Vercel
+
+The result must clearly qualify as a MAJOR AIML-BASED PROJECT
+suitable for final-year evaluation.
+
+Now apply ONLY the necessary changes and show the final output format.

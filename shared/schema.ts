@@ -26,6 +26,12 @@ export const datasetEntrySchema = z.object({
   description: z.string(),
 });
 
+export const codeTemplateSchema = z.object({
+  filename: z.string(),
+  language: z.string(),
+  content: z.string(),
+});
+
 export const projectIdeaSchema = z.object({
   title: z.string(),
   problemStatement: z.string(),
@@ -45,6 +51,8 @@ export const projectIdeaSchema = z.object({
     stage: z.string(),
     details: z.string()
   })).optional(),
+  // New: Code Templates
+  codeTemplates: z.array(codeTemplateSchema).optional(),
   advancedMetadata: z.object({
     optimization: z.string().optional(),
     explainability: z.string().optional(),
@@ -55,3 +63,4 @@ export const projectIdeaSchema = z.object({
 export type IdeaInput = z.infer<typeof ideaInputSchema>;
 export type ProjectIdea = z.infer<typeof projectIdeaSchema>;
 export type DatasetEntry = z.infer<typeof datasetEntrySchema>;
+export type CodeTemplate = z.infer<typeof codeTemplateSchema>;

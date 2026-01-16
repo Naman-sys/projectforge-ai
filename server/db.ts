@@ -4,11 +4,18 @@ import * as schema from "@shared/schema";
 
 const { Pool } = pg;
 
-if (!process.env.DATABASE_URL) {
-  throw new Error(
-    "DATABASE_URL must be set. Did you forget to provision a database?",
-  );
-}
+/**
+ * Deployment Safety:
+ * This database client is designed to handle missing DATABASE_URL gracefully.
+ * If no URL is provided (e.g. on Render/Vercel without DB setup),
+ * it will still initialize but the storage layer will catch errors.
+ */
+const databaseUrl = process.env.DATABASE_URL;
 
-export const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+export const pool = new Pool({ 
+  connectionString: databaseUrl,
+  // If no database URL, we don't want to crash on init
+  ssl: databaseUrl ? { rejectUnauthorized: false } : false
+});
+
 export const db = drizzle(pool, { schema });

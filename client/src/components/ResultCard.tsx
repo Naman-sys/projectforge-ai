@@ -20,7 +20,8 @@ import {
   Copy,
   GitMerge,
   Zap,
-  Cpu
+  Cpu,
+  FileCode
 } from "lucide-react";
 
 interface ResultCardProps {
@@ -109,13 +110,16 @@ ${idea.roadmap.map((r, i) => `${i + 1}. ${r}`).join('\n')}
         <div className="flex-1 min-h-0 bg-background/40">
           <Tabs defaultValue="overview" className="h-full flex flex-col">
             <div className="px-8 pt-2 border-b border-white/5">
-              <TabsList className="bg-transparent h-auto p-0 gap-6">
-                <TabTrigger value="overview" icon={Layers} label="Overview" />
-                <TabTrigger value="tech" icon={Code} label="Tech Stack" />
-                {idea.mlPipeline && <TabTrigger value="pipeline" icon={GitMerge} label="ML Pipeline" />}
-                <TabTrigger value="roadmap" icon={Rocket} label="Roadmap" />
-                <TabTrigger value="structure" icon={Terminal} label="Structure" />
-              </TabsList>
+              <ScrollArea className="w-full">
+                <TabsList className="bg-transparent h-auto p-0 gap-6 flex whitespace-nowrap">
+                  <TabTrigger value="overview" icon={Layers} label="Overview" />
+                  <TabTrigger value="tech" icon={Code} label="Tech Stack" />
+                  {idea.mlPipeline && <TabTrigger value="pipeline" icon={GitMerge} label="ML Pipeline" />}
+                  {idea.codeTemplates && idea.codeTemplates.length > 0 && <TabTrigger value="templates" icon={FileCode} label="Code Templates" />}
+                  <TabTrigger value="roadmap" icon={Rocket} label="Roadmap" />
+                  <TabTrigger value="structure" icon={Terminal} label="Structure" />
+                </TabsList>
+              </ScrollArea>
             </div>
 
             <ScrollArea className="flex-1">
@@ -247,6 +251,24 @@ ${idea.roadmap.map((r, i) => `${i + 1}. ${r}`).join('\n')}
                     </div>
                   </TabsContent>
                 )}
+
+                <TabsContent value="templates" className="mt-0 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  {idea.codeTemplates?.map((template, i) => (
+                    <div key={i} className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-sm font-bold text-accent flex items-center gap-2">
+                          <FileCode className="w-4 h-4" /> {template.filename}
+                        </h4>
+                        <Badge variant="outline" className="text-[10px] uppercase">{template.language}</Badge>
+                      </div>
+                      <div className="relative group">
+                        <pre className="p-4 rounded-xl bg-black/80 border border-white/10 font-mono text-xs text-primary-foreground overflow-x-auto">
+                          <code>{template.content}</code>
+                        </pre>
+                      </div>
+                    </div>
+                  ))}
+                </TabsContent>
 
                 <TabsContent value="roadmap" className="mt-0 animate-in fade-in slide-in-from-bottom-4 duration-500">
                   <div className="space-y-6 relative before:absolute before:inset-0 before:ml-2.5 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-primary before:via-accent before:to-transparent">
