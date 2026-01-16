@@ -1,0 +1,87 @@
+You are a senior Node.js engineer fixing an EXISTING monorepo project
+that is deployed as:
+
+- Backend → Render
+- Frontend → Vercel
+- Development → Replit
+
+The backend currently crashes on Render with this error:
+
+"Error: Could not find the build directory:
+ /opt/render/project/src/server/public,
+ make sure to build the client first"
+
+IMPORTANT RULES:
+- DO NOT change any application logic
+- DO NOT refactor the project structure
+- DO NOT change frontend or UI behavior
+- DO NOT break Replit compatibility
+- ONLY fix deployment-related static file serving issues
+
+========================================
+ROOT CAUSE (FOR CONTEXT)
+========================================
+
+The backend is trying to serve frontend static files in production,
+but on Render the frontend is deployed separately on Vercel.
+Therefore, the backend must NOT attempt to serve frontend files on Render.
+
+========================================
+REQUIRED FIX (MANDATORY)
+========================================
+
+1. Detect when the app is running on Render
+   using the environment variable:
+
+   process.env.RENDER
+
+2. Modify the server startup logic so that:
+
+   - Frontend static files are served ONLY when:
+     - Running on Replit or local development
+   - Frontend static files are NOT served on Render
+
+3. Ensure:
+   - No missing directory errors occur
+   - Backend runs independently on Render
+   - Existing Replit behavior remains unchanged
+
+========================================
+IMPLEMENTATION INSTRUCTIONS
+========================================
+
+In server/index.ts:
+
+- Locate the code that calls serveStatic(app)
+- Wrap it with a condition that skips execution
+  when process.env.RENDER is true
+
+Example logic (do NOT change wording elsewhere):
+
+- If NODE_ENV === "production" AND NOT running on Render:
+    serve static frontend
+- If running on Render:
+    do NOT serve frontend
+- If development AND NOT Render:
+    keep existing Vite dev behavior
+
+========================================
+WHAT NOT TO DO
+========================================
+
+- Do NOT delete serveStatic
+- Do NOT move frontend files
+- Do NOT build frontend on Render
+- Do NOT introduce new dependencies
+- Do NOT break local or Replit dev flow
+
+========================================
+EXPECTED RESULT
+========================================
+
+- Backend deploys successfully on Render
+- No "build directory not found" error
+- Frontend continues to work on Vercel
+- Replit continues to serve frontend as before
+
+Now apply ONLY this fix safely and show the corrected code.

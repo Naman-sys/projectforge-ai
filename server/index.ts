@@ -74,10 +74,17 @@ app.use((req, res, next) => {
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
   if (process.env.NODE_ENV === "production") {
-    serveStatic(app);
+    // Frontend static files are served ONLY when NOT running on Render.
+    // On Render, the frontend is deployed separately (e.g., on Vercel).
+    if (!process.env.RENDER) {
+      serveStatic(app);
+    }
   } else {
-    const { setupVite } = await import("./vite");
-    await setupVite(httpServer, app);
+    // In development, only setup Vite if NOT on Render.
+    if (!process.env.RENDER) {
+      const { setupVite } = await import("./vite");
+      await setupVite(httpServer, app);
+    }
   }
 
   // ALWAYS serve the app on the port specified in the environment variable PORT
