@@ -88,6 +88,105 @@ function calculateRelevance(title: string, domain: string): number {
   return score;
 }
 
+// === TEMPLATE GENERATORS ===
+
+function getCodeTemplates(domain: string, language: string, skillLevel: string, modelName?: string): CodeTemplate[] {
+  const templates: CodeTemplate[] = [];
+
+  if (domain === "AIML") {
+    if (language === "Python") {
+      templates.push(
+        {
+          filename: "preprocessing.py",
+          language: "python",
+          content: `import pandas as pd\nimport numpy as np\nfrom sklearn.preprocessing import StandardScaler, LabelEncoder\n\ndef preprocess_data(df):\n    # 1. Handle missing values\n    df = df.fillna(df.mean())\n    \n    # 2. Encode categorical variables\n    le = LabelEncoder()\n    for col in df.select_dtypes(include=['object']):\n        df[col] = le.fit_transform(df[col])\n    \n    # 3. Feature Scaling\n    scaler = StandardScaler()\n    features = df.drop('target', axis=1)\n    scaled_features = scaler.fit_transform(features)\n    \n    return scaled_features, df['target']`
+        },
+        {
+          filename: "train.py",
+          language: "python",
+          content: `import joblib\nfrom sklearn.model_selection import train_test_split\n# Model: ${modelName}\n\ndef train_model(X, y):\n    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)\n    # Logic for model training goes here\n    print("Training ${modelName}...")`
+        },
+        {
+          filename: "requirements.txt",
+          language: "plaintext",
+          content: `pandas>=1.3.0\nnumpy>=1.21.0\nscikit-learn>=1.0.0\njoblib>=1.1.0`
+        }
+      );
+    } else if (language === "JavaScript") {
+      templates.push(
+        {
+          filename: "pipeline.js",
+          language: "javascript",
+          content: `const tf = require('@tensorflow/tfjs-node');\n\nasync function runPipeline() {\n  // Load and process data using TensorFlow.js\n  console.log("Initializing JS ML Pipeline for ${modelName}...");\n}`
+        },
+        {
+          filename: "package.json",
+          language: "json",
+          content: `{\n  "dependencies": {\n    "@tensorflow/tfjs-node": "^4.0.0"\n  }\n}`
+        }
+      );
+    } else if (language === "Java") {
+      templates.push(
+        {
+          filename: "MLWorkflow.java",
+          language: "java",
+          content: `public class MLWorkflow {\n    public static void main(String[] args) {\n        System.out.println("Starting Java-based ML architecture...");\n        // DL4J / Weka scaffolding\n    }\n}`
+        },
+        {
+          filename: "pom.xml",
+          language: "xml",
+          content: `<!-- DeepLearning4J or Weka dependencies -->`
+        }
+      );
+    } else {
+      // AI Integration for other languages
+      templates.push({
+        filename: "ai_client." + (language === "C++" ? "cpp" : "txt"),
+        language: language.toLowerCase(),
+        content: `// Integration for ${modelName} via REST API\n// Send inference requests to hosted model server`
+      });
+    }
+  } else if (domain === "Web Dev") {
+    if (language === "JavaScript") {
+      templates.push(
+        {
+          filename: "server.js",
+          language: "javascript",
+          content: `const express = require('express');\nconst app = express();\n\napp.get('/', (req, res) => res.send('Web API Running'));\n\napp.listen(3000, () => console.log('Server started on port 3000'));`
+        },
+        {
+          filename: "App.tsx",
+          language: "typescript",
+          content: `import React from 'react';\n\nexport default function App() {\n  return <div>Web Application Dashboard</div>;\n}`
+        }
+      );
+    } else if (language === "Python") {
+      templates.push({
+        filename: "main.py",
+        language: "python",
+        content: `from fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get("/")\ndef read_root():\n    return {"Status": "Web Server Running"}`
+      });
+    }
+  } else if (domain === "App Dev") {
+    if (language === "Java") {
+      templates.push({
+        filename: "MainActivity.java",
+        language: "java",
+        content: `package com.example.app;\n\nimport android.os.Bundle;\nimport androidx.appcompat.app.AppCompatActivity;\n\npublic class MainActivity extends AppCompatActivity {\n    @Override\n    protected void onCreate(Bundle savedInstanceState) {\n        super.onCreate(savedInstanceState);\n        setContentView(R.layout.activity_main);\n    }\n}`
+      });
+    }
+  } else {
+    // Default fallback
+    templates.push({
+      filename: "project_base.txt",
+      language: "plaintext",
+      content: `Base scaffolding for ${domain} project using ${language}.`
+    });
+  }
+
+  return templates;
+}
+
 // === LOGIC ENGINE ===
 
 export function generateProject(input: IdeaInput): ProjectIdea {
@@ -114,11 +213,13 @@ export function generateProject(input: IdeaInput): ProjectIdea {
   let description = `This project addresses the critical issue: "${problem}". By building a ${skillLevel.toLowerCase()} level ${domain} application using ${language}, it provides a scalable and efficient solution for users and organizations.`;
   
   let aimlData: Partial<ProjectIdea> = {};
+  let selectedModel: string | undefined;
+
   if (domain === "AIML") {
     const config = AIML_CONFIG[skillLevel];
     
     // Align model based on Problem Title
-    let selectedModel = config.models[0];
+    selectedModel = config.models[0];
     let selectedType = "Supervised Learning";
     let selectedMetric = config.metrics[0];
 
@@ -135,25 +236,6 @@ export function generateProject(input: IdeaInput): ProjectIdea {
       selectedMetric = "Precision";
     }
 
-    // Generate Code Templates for AIML
-    const templates: CodeTemplate[] = [
-      {
-        filename: "preprocessing.py",
-        language: "python",
-        content: `import pandas as pd\nimport numpy as np\nfrom sklearn.preprocessing import StandardScaler, LabelEncoder\n\ndef preprocess_data(df):\n    # 1. Handle missing values\n    df = df.fillna(df.mean())\n    \n    # 2. Encode categorical variables\n    le = LabelEncoder()\n    for col in df.select_dtypes(include=['object']):\n        df[col] = le.fit_transform(df[col])\n    \n    # 3. Feature Scaling\n    scaler = StandardScaler()\n    features = df.drop('target', axis=1)\n    scaled_features = scaler.fit_transform(features)\n    \n    return scaled_features, df['target']\n\nif __name__ == "__main__":\n    # Placeholder for dataset path\n    DATA_PATH = "data/raw_dataset.csv"\n    print(f"Loading data from {DATA_PATH}...")`
-      },
-      {
-        filename: "train.py",
-        language: "python",
-        content: `import pandas as pd\nimport joblib\nfrom sklearn.model_selection import train_test_split\n# Model placeholder based on selection\nfrom sklearn.ensemble import ${selectedModel.replace(/\s+/g, '')} # Adjust import as needed\n\ndef train_model(X, y):\n    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)\n    \n    model = ${selectedModel.replace(/\s+/g, '')}()\n    model.fit(X_train, y_train)\n    \n    # Save model\n    joblib.dump(model, 'models/trained_model.pkl')\n    print("Model saved to models/trained_model.pkl")\n    return model\n\nif __name__ == "__main__":\n    print("Starting training pipeline for ${selectedModel}...")`
-      },
-      {
-        filename: "requirements.txt",
-        language: "plaintext",
-        content: `pandas>=1.3.0\nnumpy>=1.21.0\nscikit-learn>=1.0.0\njoblib>=1.1.0\nmatplotlib>=3.4.0\n${selectedModel.toLowerCase().includes('cnn') || selectedModel.toLowerCase().includes('transformers') ? 'tensorflow>=2.6.0\ntorch>=1.9.0' : ''}`
-      }
-    ];
-
     aimlData = {
       modelName: selectedModel,
       learningType: selectedType,
@@ -162,23 +244,25 @@ export function generateProject(input: IdeaInput): ProjectIdea {
         { stage: "Data Collection", details: "Ingesting raw structured/unstructured data from public repositories." },
         { stage: "Data Preprocessing", details: "Handling missing values, outlier detection, and normalization." },
         { stage: "Feature Engineering", details: "Dimensionality reduction (PCA) and relevant feature selection." },
-        { stage: "Model Training", details: `Optimizing ${selectedModel} using GPU-accelerated environments.` },
+        { stage: "Model Training", details: `Optimizing ${selectedModel} using appropriate environments.` },
         { stage: "Model Evaluation", details: `Validated using ${selectedMetric} on hold-out test sets.` },
-        { stage: "Deployment Strategy", details: "Containerized deployment using Docker and RESTful API endpoints." }
+        { stage: "Deployment Strategy", details: "Integration and deployment as a microservice or standalone module." }
       ],
-      codeTemplates: templates
     };
 
     if (skillLevel === "Advanced") {
       aimlData.advancedMetadata = {
-        optimization: "Bayesian Hyperparameter Tuning with 5-fold Cross Validation.",
-        explainability: "Model transparency using SHAP (SHapley Additive exPlanations).",
-        scalability: "Horizontal scaling via Kubernetes clusters and Redis caching.",
+        optimization: "Advanced parameter optimization and cross-validation techniques.",
+        explainability: "Model transparency and decision-making interpretability.",
+        scalability: "Design for horizontal scaling and high-throughput inference.",
       };
     }
 
-    description = `An industry-grade research project focusing on: "${problem}". It leverages a large-scale public dataset to train a ${selectedModel} model, focusing on high-precision outputs and model interpretability.`;
+    description = `An industry-grade research project focusing on: "${problem}". It leverages relevant datasets to train a ${selectedModel} model, focusing on high-precision outputs and interpretability.`;
   }
+
+  // Generate Code Templates based on domain and language
+  const templates = getCodeTemplates(domain, language, skillLevel, selectedModel);
 
   // 5. Tech Stack
   let stack: string[] = [];
@@ -189,10 +273,12 @@ export function generateProject(input: IdeaInput): ProjectIdea {
     else stack = ["Python", "Flask", "SQLite", "Bootstrap"];
   } else if (language === "JavaScript") {
     if (domain === "Web Dev") stack = ["Node.js", "Express", "React", "PostgreSQL", "Redux"];
+    else if (domain === "AIML") stack = ["JavaScript", "TensorFlow.js", "Node.js", "Express"];
     else stack = ["JavaScript", "Node.js", "Socket.io", "MongoDB"];
   } else if (language === "Java") {
     stack = ["Java", "Spring Boot", "PostgreSQL", "Docker"];
     if (domain === "App Dev") stack = ["Java", "Android Studio", "Firebase"];
+    else if (domain === "AIML") stack = ["Java", "DeepLearning4j", "Weka", "Maven"];
   } else if (language === "C++") {
     stack = ["C++", "Standard Template Library (STL)", "CMake"];
     if (domain === "Cyber Security") stack = ["C++", "OpenSSL", "WinAPI/Posix"];
@@ -208,62 +294,28 @@ export function generateProject(input: IdeaInput): ProjectIdea {
   // 7. Folder Structure
   let structure = "";
   if (domain === "AIML") {
-    structure = `
-project_root/
-├── data/
-│   ├── raw/
-│   └── processed/
-├── models/
-│   ├── trained/
-│   └── checkpoints/
-├── src/
-│   ├── data/ (preprocessing.py)
-│   ├── models/ (train.py, predict.py)
-│   └── utils/ (config.py)
-├── notebooks/ (EDA)
-├── requirements.txt
-└── main.py`;
-  } else if (language === "Python") {
-    structure = `
-project_root/
-├── app/
-│   ├── core/
-│   ├── api/
-│   └── models/
-├── data/
-├── notebooks/ (EDA)
-├── tests/
-├── requirements.txt
-└── main.py`;
-  } else if (language === "JavaScript") {
-    structure = `
-project_root/
-├── src/
-│   ├── components/
-│   ├── hooks/
-│   └── services/
-├── server/
-├── package.json
-└── README.md`;
+    if (language === "Python") {
+      structure = `project_root/\n├── data/\n├── models/\n├── src/\n│   ├── data/ (preprocessing.py)\n│   ├── models/ (train.py)\n├── requirements.txt\n└── main.py`;
+    } else if (language === "JavaScript") {
+      structure = `project_root/\n├── src/\n│   ├── ml/ (pipeline.js)\n├── package.json\n└── index.js`;
+    } else {
+      structure = `project_root/\n├── src/\n├── build/\n└── README.md`;
+    }
+  } else if (domain === "Web Dev") {
+    structure = `project_root/\n├── src/\n│   ├── client/\n│   └── server/\n├── package.json\n└── README.md`;
   } else {
-    structure = `
-project_root/
-├── src/
-│   ├── main/java/
-│   └── resources/
-├── build.gradle
-└── README.md`;
+    structure = `project_root/\n├── src/\n├── tests/\n└── README.md`;
   }
 
   // 8. Roadmap
   const roadmap = [
     "Requirement Analysis: Industry-grade scope definition",
-    "Environment Setup: Docker/Cuda configuration",
-    "ML Pipeline Design: Data ingestion and preprocessing",
-    "Core Development: Model training and validation",
-    "Deployment: API integration and cloud hosting",
-    "Testing: Production-grade stress testing",
-    "Documentation: Professional README and Technical Paper"
+    "Environment Setup: Domain-specific configuration",
+    "Architecture Design: Structuring the core application modules",
+    "Core Development: Implementing key logic and features",
+    "Integration: Connecting components and external services",
+    "Testing: Production-grade quality assurance",
+    "Documentation: Professional README and Technical guides"
   ];
 
   // 9. Dataset (AIML only)
@@ -283,7 +335,8 @@ project_root/
     datasetSuggestions: datasets,
     roadmap: roadmap,
     folderStructure: structure,
-    futureEnhancements: ["Real-time Cloud Sync", "Multi-user Collaboration", "Predictive Analytics Engine"],
-    ...aimlData
+    futureEnhancements: ["Scalability Optimization", "Cross-platform support", "Advanced Analytics Integration"],
+    ...aimlData,
+    codeTemplates: templates
   };
 }
