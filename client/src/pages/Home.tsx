@@ -98,7 +98,7 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      <div className={`min-h-screen w-full flex flex-col md:flex-row overflow-hidden bg-background transition-opacity duration-1000 ${isInitialLoading ? 'opacity-0' : 'opacity-100 animate-app-intro'}`}>
+      <div className={`h-screen w-full flex flex-col md:flex-row overflow-hidden bg-background transition-opacity duration-1000 ${isInitialLoading ? 'opacity-0' : 'opacity-100 animate-app-intro'}`}>
         
         {/* Theme Toggle */}
         <div className="absolute top-6 right-6 z-50">
@@ -113,7 +113,7 @@ export default function Home() {
         </div>
 
         {/* LEFT SIDE - Form */}
-        <div className="w-full md:w-[40%] lg:w-[45%] shrink-0 h-auto md:h-screen overflow-y-auto p-6 lg:p-10 border-r border-white/5 bg-background/30 backdrop-blur-sm z-10 relative flex flex-col">
+        <div className="w-full md:w-[40%] lg:w-[450px] shrink-0 h-auto md:h-full overflow-y-auto p-6 lg:p-10 border-r border-white/5 bg-background/30 backdrop-blur-sm z-10 relative flex flex-col">
           
           {/* Brand Header */}
           <div className="mb-10 pt-4">
@@ -195,13 +195,13 @@ export default function Home() {
         </div>
 
         {/* RIGHT SIDE - Display Area */}
-        <div className="flex-1 h-screen relative bg-grid-white/[0.02]">
+        <div className="flex-1 h-full relative overflow-hidden bg-grid-white/[0.02]">
           
           {/* Dynamic Background Elements */}
           <div className="absolute top-0 right-0 p-20 opacity-20 blur-3xl rounded-full bg-primary pointer-events-none" />
           <div className="absolute bottom-0 left-0 p-32 opacity-10 blur-3xl rounded-full bg-accent pointer-events-none" />
 
-          <div className="h-full w-full p-4 md:p-8 lg:p-12 overflow-hidden flex flex-col justify-center">
+          <div className="h-full w-full p-4 md:p-6 lg:p-8 flex flex-col items-center justify-center relative overflow-hidden">
             <AnimatePresence mode="wait">
               {!generate.data && !generate.isPending ? (
                 // Empty State
@@ -241,9 +241,13 @@ export default function Home() {
                 </motion.div>
               ) : (
                 // Result Card
-                <div className="h-full max-w-5xl mx-auto w-full">
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="w-full h-full max-w-4xl flex items-center justify-center"
+                >
                   <ResultCard idea={generate.data!} />
-                </div>
+                </motion.div>
               )}
             </AnimatePresence>
           </div>
