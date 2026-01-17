@@ -79,7 +79,7 @@
     font-feature-settings: "rlig" 1, "calt" 1;
     background-image: 
       radial-gradient(at 0% 0%, hsla(263, 70%, 50%, 0.15) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, hsla(189, 94%, 43%, 0.1) 0px, transparent 50%);
+      radial-gradient(at 100% 100%, hsla(189, 94%43%, 0.1) 0px, transparent 50%);
     background-attachment: fixed;
   }
   
@@ -113,6 +113,11 @@
 
   .animate-app-intro {
     animation: app-intro 1.5s ease-out forwards;
+  }
+
+  /* Fix for unstyled elements in screenshot */
+  select, button, input {
+    @apply bg-background text-foreground border-border;
   }
 }
 
