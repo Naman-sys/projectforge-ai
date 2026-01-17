@@ -14,10 +14,6 @@ async function throwIfResNotOk(res: Response) {
  */
 const API_URL = import.meta.env.VITE_API_URL || "";
 
-if (!import.meta.env.VITE_API_URL && import.meta.env.PROD) {
-  console.warn("VITE_API_URL is not set in production. API calls may fail if not served from the same origin.");
-}
-
 export async function apiRequest(
   method: string,
   url: string,
